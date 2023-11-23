@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -33,7 +34,16 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        dbManager.setOnDatabaseChangeListener(new DatabaseManager.OnDatabaseChangeListener() {
+            @Override
+            public void onDatabaseChanged() {
+                // Database has changed, send updated file to PC
+                DatabaseObserver observer = new DatabaseObserver(new Handler(), MainActivity.this);
+                observer.sendDatabaseFileToPC();
+            }
+        });
     }
+
     public void btnInsertPressed(View view) {
         dbManager.insert(editUserName.getText().toString(), editUserPassword.getText().toString());
     }
@@ -58,6 +68,4 @@ public class MainActivity extends AppCompatActivity {
     public void btnDeletePressed(View view) {
         dbManager.delete(Long.parseLong(editUserID.getText().toString()));
     }
-
-
 }
